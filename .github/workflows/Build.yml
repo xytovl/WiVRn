@@ -203,24 +203,17 @@ jobs:
         wget https://github.com/KhronosGroup/KTX-Software/releases/download/v4.3.2/KTX-Software-4.3.2-Linux-x86_64.deb
         sudo dpkg --install KTX-Software-4.3.2-Linux-x86_64.deb
 
-    - name: Check for Secret availability
-      id: secret-check
-      shell: bash
-      run: |
-        if [[ "${{ secrets.APK_SIGNINGKEYPASSWORD }}" != '' && "${{ secrets.APK_KEYSTORE_BASE64 }}" != '' ]]; then
-          echo "available=true" >> $GITHUB_OUTPUT;
-        else
-          echo "available=false" >> $GITHUB_OUTPUT;
-        fi
-
     - name: Secrets
       if: ${{ github.event_name != 'pull_request' && steps.secret-check.outputs.available == 'true' }}
       env:
         APK_SIGNINGKEYPASSWORD: ${{ secrets.APK_SIGNINGKEYPASSWORD }}
         APK_KEYSTORE_BASE64: ${{ secrets.APK_KEYSTORE_BASE64 }}
+      shell: bash
       run: |
-        echo signingKeyPassword="$APK_SIGNINGKEYPASSWORD" > gradle.properties
-        echo "$APK_KEYSTORE_BASE64" | base64 --decode --ignore-garbage > ks.keystore
+        if [[ "${APK_SIGNINGKEYPASSWORD}" != '' && "${APK_KEYSTORE_BASE64 }" != '' ]]; then
+          echo signingKeyPassword="$APK_SIGNINGKEYPASSWORD" > gradle.properties
+          echo "$APK_KEYSTORE_BASE64" | base64 --decode --ignore-garbage > ks.keystore
+        fi
 
     - name: Build
       run: |
