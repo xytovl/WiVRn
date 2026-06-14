@@ -468,7 +468,7 @@ jobs:
     - name: Download artifacts (flatpak)
       uses: actions/download-artifact@v8
       with:
-        name: wivrn-flatpak-x86_64
+        name: wivrn-server-x86_64.flatpak
         path: flatpak
 
     - name: Release
